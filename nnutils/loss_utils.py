@@ -21,7 +21,7 @@ def mask_dt_loss(proj_verts, dist_transf):
     # Reshape into B x 1 x N x 2
     sample_grid = proj_verts.unsqueeze(1)
     # B x 1 x 1 x N
-    dist_transf = torch.nn.functional.grid_sample(dist_transf, sample_grid, padding_mode='border')
+    dist_transf = torch.nn.functional.grid_sample(dist_transf, sample_grid, padding_mode='border', align_corners=True)
     return dist_transf.mean()
 
 
@@ -39,7 +39,7 @@ def texture_dt_loss(texture_flow, dist_transf, vis_rend=None, cams=None, verts=N
     F = texture_flow.size(1)
     flow_grid = texture_flow.view(-1, F, T * T, 2)
     # B x 1 x F x T*T
-    dist_transf = torch.nn.functional.grid_sample(dist_transf, flow_grid)
+    dist_transf = torch.nn.functional.grid_sample(dist_transf, flow_grid, align_corners=True)
 
     if vis_rend is not None:
         # Visualize the error!
@@ -51,7 +51,7 @@ def texture_dt_loss(texture_flow, dist_transf, vis_rend=None, cams=None, verts=N
         dts = dts.permute(0, 2, 3, 4, 1)
         dts = dts.unsqueeze(4).repeat(1, 1, 1, 1, T, 1) / dts.max()
 
-        from ..utils import bird_vis
+        from utils import bird_vis
         for i in range(dist_transf.size(0)):
             rend_dt = vis_rend(verts[i], cams[i], dts[i])
             rend_img = bird_vis.tensor2im(tex_pred[i].data)            
@@ -306,6 +306,8 @@ class EdgeLoss(object):
             import ipdb; ipdb.set_trace()
 
 
+
+
 class LaplacianLoss(object):
     """
     Encourages minimal mean curvature shapes.
@@ -313,9 +315,9 @@ class LaplacianLoss(object):
     def __init__(self, faces):
         # Input:
         #  faces: B x F x 3
-        from ..nnutils.laplacian import Laplacian
+        from nnutils.laplacian import LaplacianModule
         # V x V
-        self.laplacian = Laplacian(faces)
+        self.laplacian = LaplacianModule(faces)
         self.Lx = None
 
     def __call__(self, verts):
@@ -348,7 +350,7 @@ class LaplacianLoss(object):
 
 class PerceptualTextureLoss(object):
     def __init__(self):
-        from ..nnutils.perceptual_loss import PerceptualLoss
+        from nnutils.perceptual_loss import PerceptualLoss
         self.perceptual_loss = PerceptualLoss()
 
     def __call__(self, img_pred, img_gt, mask_pred, mask_gt):

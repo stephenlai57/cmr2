@@ -1,50 +1,58 @@
-# Learning Category-Specific Mesh Reconstruction from Image Collections
+# TL;DR
 
-Angjoo Kanazawa<sup>\*</sup>, Shubham Tulsiani<sup>\*</sup>, Alexei A. Efros, Jitendra Malik
+This repo include the port of the following work to Python3 and latest PyTorch [1.3], and remove the cupy/chainer dependancy:
 
-University of California, Berkeley
-In ECCV, 2018
+1. [Learning Category-Specific Mesh Reconstruction from Image Collections (ECCV 2018)](https://github.com/akanazawa/cmr)
+2. [Neural 3D Mesh Renderer (CVPR 2018)](https://github.com/hiroharu-kato/neural_renderer)
 
-[Project Page](https://akanazawa.github.io/cmr/)
+Special thanks to the them and [neural_renderer_pytorch](https://github.com/daniilidis-group/neural_renderer).
+
 ![Teaser Image](https://akanazawa.github.io/cmr/resources/images/teaser.png)
 
 ### Requirements
-- Python 2.7
-- [PyTorch](https://pytorch.org/) tested on version `0.3.0.post4`
+- Python 3
+- [PyTorch](https://pytorch.org/) tested on version `1.3.0`
 
 ### Installation
 
+
 #### Setup virtualenv
 ```
-virtualenv venv_cmr
-source venv_cmr/bin/activate
-pip install -U pip
-deactivate
-source venv_cmr/bin/activate
+conda create -n cmr2
+conda activate cmr2
+conda install pytorch torchvision -c pytorch
 pip install -r requirements.txt
 ```
 
-#### Install Neural Mesh Renderer and Perceptual loss
+
+#### install neural_renderer
 ```
-cd external;
-bash install_external.sh
+cd neural_renderer
+export CUDA_HOME=/path/to/cuda/ 
 ```
 
+Install specified [CUDA here](https://developer.nvidia.com/cuda-toolkit-archive) same version as PyTorch `python -c 'import torch;print(torch.version.cuda)'`, for example `10.1.243`->`cuda 10.1`. Make sure you set the right `CUDA_HOME` (e.g. `ls $CUDA_HOME/bin/nvcc` works.)
+and then 
+```
+python setup.py install
+```
+
+ 
 ### Demo
 1. From the `cmr` directory, download the trained model:
 ```
-wget https://people.eecs.berkeley.edu/~kanazawa/cachedir/cmr/model.tar.gz & tar -vzxf model.tar.gz
+wget https://people.eecs.berkeley.edu/~kanazawa/cachedir/cmr/model.tar.gz && tar -vzxf model.tar.gz
 ```
 You should see `cmr/cachedir/snapshots/bird_net/`
 
 2. Run the demo:
 ```
-python -m cmr.demo --name bird_net --num_train_epoch 500 --img_path cmr/demo_data/img1.jpg
-python -m cmr.demo --name bird_net --num_train_epoch 500 --img_path cmr/demo_data/birdie.jpg
+python demo.py --name bird_net --num_train_epoch 500 --img_path demo_data/img1.jpg
+python demo.py --name bird_net --num_train_epoch 500 --img_path demo_data/birdie.jpg
 ```
 
 ### Training
-Please see [doc/train.md](https://github.com/akanazawa/cmr/blob/master/doc/train.md)
+Please see [doc/train.md](doc/train.md)
 
 ### Citation
 If you use this code for your research, please consider citing:

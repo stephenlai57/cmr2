@@ -11,8 +11,8 @@ from torch.autograd import Variable
 import numpy as np
 import cv2
 
-from ..nnutils.nmr import NeuralRenderer
-from ..utils import transformations
+from nnutils.nmr import NeuralRenderer
+from utils import transformations
 
 
 class VisRenderer(object):
@@ -395,7 +395,7 @@ def visflow(flow_img):
 
 
 def visflow_jonas(flow_img, img_size):
-    from ..utils.viz_flow import viz_flow
+    from utils.viz_flow import viz_flow
     # H x W x 2
     flow = convert2np(flow_img)
 
@@ -411,7 +411,7 @@ def visflow_jonas(flow_img, img_size):
 if __name__ == '__main__':
 
     # Test vis_vert2kp:
-    from ..utils import mesh
+    from utils import mesh
     verts, faces = mesh.create_sphere()
     num_kps = 15
     num_vs = verts.shape[0]

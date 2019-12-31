@@ -25,15 +25,15 @@ from torch.autograd import Variable
 import scipy.io as sio
 from collections import OrderedDict
 
-from ..data import cub as cub_data
-from ..utils import visutil
-from ..utils import bird_vis
-from ..utils import image as image_utils
-from ..nnutils import train_utils
-from ..nnutils import loss_utils
-from ..nnutils import mesh_net
-from ..nnutils.nmr import NeuralRenderer
-from ..nnutils import geom_utils
+from data import cub as cub_data
+from utils import visutil
+from utils import bird_vis
+from utils import image as image_utils
+from nnutils import train_utils
+from nnutils import loss_utils
+from nnutils import mesh_net
+from nnutils.nmr import NeuralRenderer
+from nnutils import geom_utils
 
 flags.DEFINE_string('dataset', 'cub', 'cub or pascal or p3d')
 # Weights:
@@ -51,6 +51,10 @@ opts = flags.FLAGS
 
 curr_path = osp.dirname(osp.abspath(__file__))
 cache_path = osp.join(curr_path, '..', 'cachedir')
+
+def hook(module, grad_input, grad_output):
+    print(str(module),grad_input.shape,grad_input.device,grad_output.shape,grad_output.device)
+    return grad_input
 
 class ShapeTrainer(train_utils.Trainer):
     def define_model(self):
@@ -92,6 +96,13 @@ class ShapeTrainer(train_utils.Trainer):
 
         # For visualization
         self.vis_rend = bird_vis.VisRenderer(opts.img_size, faces.data.cpu().numpy())
+
+        # import ipdb
+        # ipdb.set_trace()
+        # for k,v in self.model.named_modules():
+        #         v.register_backward_hook(hook)
+
+
         return
 
     def init_dataset(self):
@@ -151,9 +162,9 @@ class ShapeTrainer(train_utils.Trainer):
     def forward(self):
         opts = self.opts
         if opts.texture:
-            pred_codes, self.textures = self.model.forward(self.input_imgs)
+            pred_codes, self.textures = self.model(self.input_imgs)
         else:
-            pred_codes = self.model.forward(self.input_imgs)
+            pred_codes = self.model(self.input_imgs)
         self.delta_v, scale, trans, quat = pred_codes
 
         self.cam_pred = torch.cat([scale, trans, quat], 1)
@@ -181,7 +192,7 @@ class ShapeTrainer(train_utils.Trainer):
         self.kp_pred = self.renderer.project_points(self.kp_verts, proj_cam)
 
         # Render mask.
-        self.mask_pred = self.renderer.forward(self.pred_v, self.faces, proj_cam)
+        self.mask_pred = self.renderer(self.pred_v, self.faces, proj_cam)
 
         if opts.texture:
             self.texture_flow = self.textures
@@ -189,7 +200,7 @@ class ShapeTrainer(train_utils.Trainer):
             tex_size = self.textures.size(2)
             self.textures = self.textures.unsqueeze(4).repeat(1, 1, 1, 1, tex_size, 1)
   
-            self.texture_pred = self.tex_renderer.forward(self.pred_v.detach(), self.faces, proj_cam.detach(), textures=self.textures)
+            self.texture_pred = self.tex_renderer(self.pred_v.detach(), self.faces, proj_cam.detach(), textures=self.textures)
         else:
             self.textures = None
 
@@ -233,7 +244,7 @@ class ShapeTrainer(train_utils.Trainer):
             uv_flows = self.model.texture_predictor.uvimage_pred
             # B x H x W x 2
             uv_flows = uv_flows.permute(0, 2, 3, 1)
-            uv_images = torch.nn.functional.grid_sample(self.imgs, uv_flows)
+            uv_images = torch.nn.functional.grid_sample(self.imgs, uv_flows,align_corners=True)
 
         num_show = min(2, self.opts.batch_size)
         show_uv_imgs = []
@@ -286,17 +297,17 @@ class ShapeTrainer(train_utils.Trainer):
     def get_current_scalars(self):
         sc_dict = OrderedDict([
             ('smoothed_total_loss', self.smoothed_total_loss),
-            ('total_loss', self.total_loss.data[0]),
-            ('kp_loss', self.kp_loss.data[0]),
-            ('mask_loss', self.mask_loss.data[0]),
-            ('vert2kp_loss', self.vert2kp_loss.data[0]),
-            ('deform_reg', self.deform_reg.data[0]),
-            ('tri_loss', self.triangle_loss.data[0]),
-            ('cam_loss', self.cam_loss.data[0]),
+            ('total_loss', self.total_loss.item()),
+            ('kp_loss', self.kp_loss.item()),
+            ('mask_loss', self.mask_loss.item()),
+            ('vert2kp_loss', self.vert2kp_loss.item()),
+            ('deform_reg', self.deform_reg.item()),
+            ('tri_loss', self.triangle_loss.item()),
+            ('cam_loss', self.cam_loss.item()),
         ])
         if self.opts.texture:
-            sc_dict['tex_loss'] = self.tex_loss.data[0]
-            sc_dict['tex_dt_loss'] = self.tex_dt_loss.data[0]
+            sc_dict['tex_loss'] = self.tex_loss.item()
+            sc_dict['tex_dt_loss'] = self.tex_dt_loss.item()
 
         return sc_dict
 

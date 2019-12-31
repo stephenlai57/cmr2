@@ -17,9 +17,9 @@ import os.path as osp
 
 # For options.
 # results_dir_base
-from ..nnutils import test_utils
+from nnutils import test_utils
 # split
-from ..data import cub as cub_data
+from data import cub as cub_data
 
 import scipy.io as sio
 import numpy as np

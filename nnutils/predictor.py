@@ -17,10 +17,10 @@ import torchvision
 from torch.autograd import Variable
 import scipy.io as sio
 
-from ..nnutils import mesh_net
-from ..nnutils import geom_utils
-from ..nnutils.nmr import NeuralRenderer
-from ..utils import bird_vis
+from nnutils import mesh_net
+from nnutils import geom_utils
+from nnutils.nmr import NeuralRenderer
+from utils import bird_vis
 
 # These options are off by default, but used for some ablations reported.
 flags.DEFINE_boolean('ignore_pred_delta_v', False, 'Use only mean shape for prediction')
@@ -169,7 +169,7 @@ class MeshPredictor(object):
             # B x H x W x 2
             self.uv_flows = uv_flows.permute(0, 2, 3, 1)
             self.uv_images = torch.nn.functional.grid_sample(self.imgs,
-                                                             self.uv_flows)
+                                self.uv_flows, align_corners=True)
         else:
             self.textures = None
 

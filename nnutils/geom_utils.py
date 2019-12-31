@@ -21,7 +21,7 @@ def sample_textures(texture_flow, images):
     F = texture_flow.size(1)
     flow_grid = texture_flow.view(-1, F, T * T, 2)
     # B x 3 x F x T*T
-    samples = torch.nn.functional.grid_sample(images, flow_grid)
+    samples = torch.nn.functional.grid_sample(images, flow_grid, align_corners=True)
     # B x 3 x F x T x T
     samples = samples.view(-1, 3, F, T, T)
     # B x F x T x T x 3

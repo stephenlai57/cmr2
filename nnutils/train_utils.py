@@ -12,7 +12,7 @@ import time
 import pdb
 from absl import flags
 
-from ..utils.visualizer import Visualizer
+from utils.visualizer import Visualizer
 
 #-------------- flags -------------#
 #----------------------------------#
@@ -135,6 +135,8 @@ class Trainer():
             self.optimizer = torch.optim.Adam(
                 self.model.parameters(), lr=opts.learning_rate, betas=(opts.beta1, 0.999))
 
+
+
     def train(self):
         opts = self.opts
         self.smoothed_total_loss = 0
@@ -151,7 +153,7 @@ class Trainer():
                 if not self.invalid_batch:
                     self.optimizer.zero_grad()
                     self.forward()
-                    self.smoothed_total_loss = self.smoothed_total_loss*0.99 + 0.01*self.total_loss.data[0]
+                    self.smoothed_total_loss = self.smoothed_total_loss*0.99 + 0.01*self.total_loss.item()
                     self.total_loss.backward()
                     # pdb.set_trace()
                     self.optimizer.step()

@@ -16,4 +16,6 @@ ipyNb
 *.pdf
 *.texnicle
 *.fdb_latexmk
-
+~*
+*cache*
+del/

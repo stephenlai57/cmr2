@@ -15,8 +15,8 @@ import torchvision
 import torch.nn as nn
 from torch.autograd import Variable
 
-from ..utils import mesh
-from ..utils import geometry as geom_utils
+from utils import mesh
+from utils import geometry as geom_utils
 from . import net_blocks as nb
 
 #-------------- flags -------------#
@@ -120,9 +120,9 @@ class TexturePredictorUV(nn.Module):
         uvimage_pred = uvimage_pred.view(uvimage_pred.size(0), self.nc_init, self.feat_H, self.feat_W)
         # B x 2 or 3 x H x W
         self.uvimage_pred = self.decoder.forward(uvimage_pred)
-        self.uvimage_pred = torch.nn.functional.tanh(self.uvimage_pred)
+        self.uvimage_pred = torch.tanh(self.uvimage_pred)
 
-        tex_pred = torch.nn.functional.grid_sample(self.uvimage_pred, self.uv_sampler)
+        tex_pred = torch.nn.functional.grid_sample(self.uvimage_pred, self.uv_sampler, align_corners=True)
         tex_pred = tex_pred.view(uvimage_pred.size(0), -1, self.F, self.T, self.T).permute(0, 2, 3, 4, 1)
 
         if self.symmetric:

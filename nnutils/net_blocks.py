@@ -69,7 +69,7 @@ def upconv2d(in_planes, out_planes, mode='bilinear'):
     if mode == 'nearest':
         print('Using NN upsample!!')
     upconv = nn.Sequential(
-        nn.Upsample(scale_factor=2, mode=mode),
+        nn.Upsample(scale_factor=2, mode=mode, align_corners=True),
         nn.ReflectionPad2d(1),
         nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=1, padding=0),
         nn.LeakyReLU(0.2,inplace=True)

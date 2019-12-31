@@ -12,7 +12,6 @@ from __future__ import division
 from __future__ import print_function
 
 import torch
-from torch.autograd import Variable
 
 import numpy as np
 from scipy import sparse
@@ -21,42 +20,22 @@ from scipy import sparse
 ### Utils ###
 #############
 def convert_as(src, trg):
-    src = src.type_as(trg)
-    if src.is_cuda:
-        src = src.cuda(device=trg.get_device())
-    return src
+    return src.to(trg.device).type_as(trg)
 
-########################################################################
-################# Wrapper class for a  PythonOp ########################
-##### All functions must only use torch Tensors as inputs/outputs ######
-########################################################################
-class Laplacian(torch.autograd.Function):
-    def __init__(self, faces):
-        # Faces is B x F x 3, cuda torch Variabe.
-        # Reuse faces.
-        self.F_np = faces.data.cpu().numpy()
-        self.F = faces.data
+
+class LaplacianModule(torch.nn.Module):
+    def __init__(self,faces):
+        super(LaplacianModule, self).__init__()
+        self.SF = faces.detach()
+        self.F_np = faces.detach().cpu().numpy()
         self.L = None
-
+    
     def forward(self, V):
-        # If forward is explicitly called, V is still a Parameter or Variable
-        # But if called through __call__ it's a tensor.
-        # This assumes __call__ was used.
-        #
-        # Input:
-        #   V: B x N x 3
-        #   F: B x F x 3
-        # Outputs: Lx B x N x 3
-        #
-        # Numpy also doesnt support sparse tensor, so stack along the batch
-
-        V_np = V.cpu().numpy()
-        batchV = V_np.reshape(-1, 3)
-
+        batchV = V.detach().cpu().numpy().reshape(-1, 3)
         if self.L is None:
             print('Computing the Laplacian!')
             # Compute cotangents
-            C = cotangent(V, self.F)
+            C = cotangent(V.detach(), self.SF)
             C_np = C.cpu().numpy()
             batchC = C_np.reshape(-1, 3)            
             # Adjust face indices to stack:
@@ -71,22 +50,42 @@ class Laplacian(torch.autograd.Function):
             L = sparse.csr_matrix((batchC.reshape(-1), (rows, cols)), shape=(BN,BN))
             L = L + L.T
             # np.sum on sparse is type 'matrix', so convert to np.array
+            import ipdb;ipdb.set_trace()
             M = sparse.diags(np.array(np.sum(L, 1)).reshape(-1), format='csr')
+            
             L = L - M
             # remember this
             self.L = L
-            # import matplotlib.pylab as plt
-            # plt.ion()
-            # plt.clf()
-            # plt.spy(L)
-            # plt.show()
-            # import ipdb; ipdb.set_trace()
+        results = Laplacian.apply(V,self.L)
+        return results
 
-        Lx = self.L.dot(batchV).reshape(V_np.shape)
+from torch.autograd.function import once_differentiable
+class Laplacian(torch.autograd.Function):
+
+       
+    @staticmethod
+    def forward(ctx, V, SL):
+        # If forward is explicitly called, V is still a Parameter or Variable
+        # But if called through __call__ it's a tensor.
+        # This assumes __call__ was used.
+        #
+        # Input:
+        #   V: B x N x 3
+        #   F: B x F x 3
+        # Outputs: Lx B x N x 3
+        #
+        # Numpy also doesnt support sparse tensor, so stack along the batch
+
+        V_np = V.cpu().numpy()
+        batchV = V_np.reshape(-1, 3)
+        Lx = SL.dot(batchV).reshape(V_np.shape)
+        ctx.L = SL
 
         return convert_as(torch.Tensor(Lx), V)
 
-    def backward(self, grad_out):
+    @staticmethod
+    @once_differentiable
+    def backward(ctx, grad_out):
         """
         Just L'g = Lg
         Args:
@@ -97,9 +96,11 @@ class Laplacian(torch.autograd.Function):
         g_o = grad_out.cpu().numpy()
         # Stack
         g_o = g_o.reshape(-1, 3)
-        Lg = self.L.dot(g_o).reshape(grad_out.shape)
-
-        return convert_as(torch.Tensor(Lg), grad_out)
+        Lg = ctx.L.dot(g_o).reshape(grad_out.shape)
+        # print('----------------------finish')
+        cc= convert_as(torch.Tensor(Lg), grad_out)
+        # print(cc.device,'-----')
+        return cc, None
 
 
 def cotangent(V, F):

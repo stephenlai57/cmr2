@@ -14,7 +14,7 @@ from absl import flags
 
 import scipy.misc
 
-from ..utils.visualizer import Visualizer
+from utils.visualizer import Visualizer
 
 #-------------- flags -------------#
 #----------------------------------#

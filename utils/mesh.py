@@ -7,13 +7,12 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-import meshzoo
-
+from utils.meshzoo import iso_sphere
 
 def create_sphere(n_subdivide=3):
     # 3 makes 642 verts, 1280 faces,
     # 4 makes 2562 verts, 5120 faces
-    verts, faces = meshzoo.iso_sphere(n_subdivide)
+    verts, faces = iso_sphere(n_subdivide)
     return verts, faces
 
 

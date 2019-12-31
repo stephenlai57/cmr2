@@ -16,9 +16,9 @@ from __future__ import print_function
 import os.path as osp
 import numpy as np
 
-import scipy.misc
 import scipy.linalg
 import scipy.ndimage.interpolation
+from pylab import imread
 from absl import flags, app
 
 import torch
@@ -26,8 +26,8 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
 
-from ..utils import image as image_utils
-from ..utils import transformations
+from utils import image as image_utils
+from utils import transformations
 
 
 flags.DEFINE_integer('img_size', 256, 'image size')
@@ -74,7 +74,7 @@ class BaseDataset(Dataset):
         sfm_pose[2] = transformations.quaternion_from_matrix(sfm_rot, isprecise=True)
 
         img_path = osp.join(self.img_dir, str(data.rel_path))
-        img = scipy.misc.imread(img_path) / 255.0
+        img = imread(img_path) / 255.0
         # Some are grayscale:
         if len(img.shape) == 2:
             img = np.repeat(np.expand_dims(img, 2), 3, axis=2)

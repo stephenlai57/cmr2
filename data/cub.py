@@ -21,7 +21,7 @@ import torch
 from torch.utils.data import Dataset
 
 from . import base as base_data
-from ..utils import transformations
+from utils import transformations
 
 # -------------- flags ------------- #
 # ---------------------------------- #
@@ -30,7 +30,7 @@ if osp.exists('/scratch1/storage'):
 elif osp.exists('/data1/shubhtuls'):
     kData = '/data0/shubhtuls/datasets/CUB'
 else:  # Savio
-    kData = '/global/home/users/kanazawa/scratch/CUB'
+    kData = './CUB_200_2011'
     
 flags.DEFINE_string('cub_dir', kData, 'CUB Data Directory')
 

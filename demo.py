@@ -18,9 +18,9 @@ import skimage.io as io
 
 import torch
 
-from .nnutils import test_utils
-from .nnutils import predictor as pred_util
-from .utils import image as img_util
+from nnutils import test_utils
+from nnutils import predictor as pred_util
+from utils import image as img_util
 
 
 flags.DEFINE_string('img_path', 'data/im1963.jpg', 'Image to run')
