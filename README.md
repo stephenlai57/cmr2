@@ -68,4 +68,3 @@ If you use this code for your research, please consider citing:
   year={2018}
 }
 
-```
