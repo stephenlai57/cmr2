@@ -50,7 +50,7 @@ class LaplacianModule(torch.nn.Module):
             L = sparse.csr_matrix((batchC.reshape(-1), (rows, cols)), shape=(BN,BN))
             L = L + L.T
             # np.sum on sparse is type 'matrix', so convert to np.array
-            import ipdb;ipdb.set_trace()
+            # import ipdb;ipdb.set_trace()
             M = sparse.diags(np.array(np.sum(L, 1)).reshape(-1), format='csr')
             
             L = L - M

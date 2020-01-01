@@ -50,7 +50,7 @@ flags.DEFINE_boolean('use_gtpose', True, 'if true uses gt pose for projection, b
 opts = flags.FLAGS
 
 curr_path = osp.dirname(osp.abspath(__file__))
-cache_path = osp.join(curr_path, '..', 'cachedir')
+cache_path = osp.join(curr_path, '..', 'misc', 'cachedir')
 
 def hook(module, grad_input, grad_output):
     print(str(module),grad_input.shape,grad_input.device,grad_output.shape,grad_output.device)

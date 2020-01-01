@@ -30,12 +30,12 @@ if osp.exists('/scratch1/storage'):
 elif osp.exists('/data1/shubhtuls'):
     kData = '/data0/shubhtuls/datasets/CUB'
 else:  # Savio
-    kData = './CUB_200_2011'
+    kData = './misc/CUB_200_2011'
     
 flags.DEFINE_string('cub_dir', kData, 'CUB Data Directory')
 
 curr_path = osp.dirname(osp.abspath(__file__))
-cache_path = osp.join(curr_path, '..', 'cachedir')
+cache_path = osp.join(curr_path, '..', 'misc', 'cachedir')
 flags.DEFINE_string('cub_cache_dir', osp.join(cache_path, 'cub'), 'CUB Data Directory')
 
 opts = flags.FLAGS

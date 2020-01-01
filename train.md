@@ -1,17 +1,24 @@
 
 ## Pre-reqs
 
+
+### Install external loss lib
+```
+git clone https://github.com/shubhtuls/PerceptualSimilarity.git
+```
+
 ### CUB Data
 1. Download CUB-200-2011 images somewhere:
 ```
-wget http://www.vision.caltech.edu/visipedia-data/CUB-200-2011/CUB_200_2011.tgz && tar -xf CUB_200_2011.tgz
+cd misc &&  wget http://www.vision.caltech.edu/visipedia-data/CUB-200-2011/CUB_200_2011.tgz && tar -xf CUB_200_2011.tgz
 ```
 
 2. Download our CUB annotation mat files and pre-computed SfM outputs.
 Do this from the `cmr/` directory, and this should make `cmr/cachedir` directory:
 
-`wget https://sfo2.digitaloceanspaces.com/yun/misc/cachedir.tar.gz && tar -vzxf cachedir.tar.gz`~~
-
+```
+wget https://sfo2.digitaloceanspaces.com/yun/misc/cachedir.tar.gz && tar -vzxf cachedir.tar.gz
+```
 #### Computing SfM
 **You may skip this**
 
@@ -23,10 +30,16 @@ main
 
 
 ### Model training
+you need to start `visdom.server` before training
+```
+nohup python -m visdom.server & # remove nohup and `&` to see error
+```
+
 Change the `name` to whatever you want to call. Also see `main.py` to adjust
 hyper-parameters (for eg. increase `tex_loss_wt` and `text_dt_loss_wt` if you
 want better texture, increase texture resolution with `tex_size`).
 See `nnutils/mesh_net.py` and `nnutils/train_utils.py` for more model/training options.
+
 
 ```
 python  main.py --name=bird_net --display_port 8097

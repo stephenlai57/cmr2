@@ -18,7 +18,7 @@ from utils.visualizer import Visualizer
 #----------------------------------#
 ## Flags for training
 curr_path = osp.dirname(osp.abspath(__file__))
-cache_path = osp.join(curr_path, '..', 'cachedir')
+cache_path = osp.join(curr_path, '..', 'misc', 'cachedir')
 
 flags.DEFINE_string('name', 'exp_name', 'Experiment Name')
 # flags.DEFINE_string('cache_dir', cache_path, 'Cachedir') # Not used!

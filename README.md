@@ -30,19 +30,22 @@ pip install -r requirements.txt
 export CUDA_HOME=/path/to/cuda/ 
 ```
 
-Install specified [CUDA here](https://developer.nvidia.com/cuda-toolkit-archive) same version as PyTorch `python -c 'import torch;print(torch.version.cuda)'`, for example `10.1.243`->`cuda 10.1`. Make sure you set the right `CUDA_HOME` (e.g. `ls $CUDA_HOME/bin/nvcc` works.)
-and then 
+Install specified [CUDA here](https://developer.nvidia.com/cuda-toolkit-archive) same version as PyTorch `python -c 'import torch;print(torch.version.cuda)'`, for example `10.1.243`->`cuda 10.1`. 
+
+Make sure you set the right `CUDA_HOME` (e.g. `ls $CUDA_HOME/bin/nvcc` works.)
+and then build extension
 ```
-python setup.py install
+python setup.py install # install to sys.path
+python setup.py build develop # install to workspace
 ```
 
  
 ### Demo
 1. From the `cmr` directory, download the trained model:
 ```
-wget https://people.eecs.berkeley.edu/~kanazawa/cachedir/cmr/model.tar.gz && tar -vzxf model.tar.gz
+cd misc && wget https://people.eecs.berkeley.edu/~kanazawa/cachedir/cmr/model.tar.gz && tar -vzxf model.tar.gz
 ```
-You should see `cmr/cachedir/snapshots/bird_net/`
+You should see `misc/cachedir/snapshots/bird_net/`
 
 2. Run the demo:
 ```

@@ -253,7 +253,9 @@ def exec_main():
     print(masks_torch.shape)
     print(torch.sum(vertices_var.grad))
 
+@DeprecationWarning
 def teapot_deform_test():
+    #
     obj_file = 'birds3d/external/neural_renderer/examples/data/teapot.obj'
     img_file = 'birds3d/external/neural_renderer/examples/data/example2_ref.png'
     img_save_dir = 'birds3d/cachedir/nmr/'
