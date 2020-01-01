@@ -23,25 +23,36 @@ main
 
 
 ### Model training
-Change the `name` to whatever you want to call. Also see `shape.py` to adjust
+Change the `name` to whatever you want to call. Also see `main.py` to adjust
 hyper-parameters (for eg. increase `tex_loss_wt` and `text_dt_loss_wt` if you
 want better texture, increase texture resolution with `tex_size`).
 See `nnutils/mesh_net.py` and `nnutils/train_utils.py` for more model/training options.
 
 ```
-python  experiments/shape.py --name=bird_net --display_port 8097
+python  main.py --name=bird_net --display_port 8097
 ```
+
+
+More settings:
+```
+# Stronger texture & higher resolution texture.
+python main.py --name=bird_net_better_texture --tex_size=6 --tex_loss_wt 1. --tex_dt_loss_wt 1. --display_port 8088
+
+# Stronger texture & higher resolution texture + higher res mesh. 
+python main.py --name=bird_net_hd --tex_size=6 --tex_loss_wt 1. --tex_dt_loss_wt 1. --subdivide 4 --display_port 8089
+```
+
 
 ### Evaluation
 We provide evaluation code to compute the IOU curves in the paper.
 Command below runs the model with different ablation settings.
 Run it from one directory above the `cmr` directory.
 ```
-python benchmark/run_evals.py --split val  --name bird_net --num_train_epoch 500
+python misc/benchmark/run_evals.py --split val  --name bird_net --num_train_epoch 500
 ```
 
 Then, run 
 ```
-python benchmark/plot_curvess.py --split val  --name bird_net --num_train_epoch 500
+python misc/benchmark/plot_curvess.py --split val  --name bird_net --num_train_epoch 500
 ```
 in order to see the IOU curve.

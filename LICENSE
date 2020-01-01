@@ -1,9 +1,11 @@
 MIT License
 
-Copyright (c) 2018 akanazawa
 Copyright (c) 2017 Hiroharu Kato
+Copyright (c) 2018 akanazawa
 Copyright (c) 2018 Nikos Kolotouros
-A PyTorch implementation of Neural 3D Mesh Renderer (https://github.com/hiroharu-kato/neural_renderer)
+Copyright (c) 2019 Yun Chen
+
+A Python3/PyTorch update of CMR (https://github.com/akanazawa/cmr)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

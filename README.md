@@ -27,7 +27,6 @@ pip install -r requirements.txt
 
 #### install neural_renderer
 ```
-cd neural_renderer
 export CUDA_HOME=/path/to/cuda/ 
 ```
 
@@ -47,12 +46,12 @@ You should see `cmr/cachedir/snapshots/bird_net/`
 
 2. Run the demo:
 ```
-python demo.py --name bird_net --num_train_epoch 500 --img_path demo_data/img1.jpg
-python demo.py --name bird_net --num_train_epoch 500 --img_path demo_data/birdie.jpg
+python demo.py --name bird_net --num_train_epoch 500 --img_path misc/demo_data/img1.jpg
+python demo.py --name bird_net --num_train_epoch 500 --img_path misc/demo_data/birdie.jpg
 ```
 
 ### Training
-Please see [doc/train.md](doc/train.md)
+Please see [doc/train.md](train.md)
 
 ### Citation
 If you use this code for your research, please consider citing:

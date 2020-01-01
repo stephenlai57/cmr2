@@ -5,7 +5,7 @@ Note that CMR assumes that the object has been detected, so please use a picture
 
 Sample usage:
 
-python -m cmr.demo --name bird_net --num_train_epoch 500 --img_path cmr/demo_data/img1.jpg
+python demo.py --name bird_net --num_train_epoch 500 --img_path misc/demo_data/img1.jpg
 """
 
 from __future__ import absolute_import
