@@ -10,7 +10,7 @@ import neural_renderer as nr
 
 class Renderer(nn.Module):
     def __init__(self, image_size=256, anti_aliasing=True, background_color=[0,0,0],
-                 fill_back=True, camera_mode='projection',
+                 fill_back=True, camera_mode='look_at',
                  K=None, R=None, t=None, dist_coeffs=None, orig_size=1024,
                  perspective=True, viewing_angle=30, camera_direction=[0,0,1],
                  near=0.1, far=100,
