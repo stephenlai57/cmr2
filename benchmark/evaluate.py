@@ -35,7 +35,7 @@ class ShapeTester(test_utils.Tester):
         # for visualization
         self.renderer = self.predictor.vis_rend
         self.renderer.set_bgcolor([1., 1., 1.])
-        self.renderer.renderer.renderer.renderer.image_size = 512
+        self.renderer.renderer.renderer.image_size = 512
         self.renderer.set_light_dir([0, 1, -1], 0.38)
 
     def init_dataset(self):

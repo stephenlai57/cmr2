@@ -94,8 +94,8 @@ def visualize(img, outputs, renderer):
     plt.axis('off')
     plt.draw()
     plt.show()
-    import ipdb
-    ipdb.set_trace()
+    print('saving file to demo.png')
+    plt.savefig('demo.png')
 
 
 def main(_):

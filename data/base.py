@@ -18,7 +18,7 @@ import numpy as np
 
 import scipy.linalg
 import scipy.ndimage.interpolation
-from pylab import imread
+from skimage.io import imread
 from absl import flags, app
 
 import torch
