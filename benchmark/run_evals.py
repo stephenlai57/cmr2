@@ -7,7 +7,7 @@ Runs evaluation for ablation study.
 - SfM mean shape + SfM camera
 
 Sample run:
-python -m cmr.benchmark.run_evals --split val  --name CUB_submitted --num_train_epoch 500
+python -m  benchmark/run_evals --split val  --name CUB_submitted --num_train_epoch 500
 """
 
 from __future__ import absolute_import
@@ -26,7 +26,7 @@ opts = flags.FLAGS
 
 
 def main(_):
-    base_cmd = 'python -m cmr.benchmark.evaluate --split {} --name {} --num_train_epoch {} '.format(
+    base_cmd = 'python benchmark/evaluate.py --split {} --name {} --num_train_epoch {} '.format(
         opts.split, opts.name, opts.num_train_epoch)
 
     optionA = [' ', ' --use_sfm_ms']
