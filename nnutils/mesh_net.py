@@ -230,7 +230,7 @@ class MeshNet(nn.Module):
 
         # Mean shape.
         verts, faces = mesh.create_sphere(opts.subdivide)
-        num_verts = verts.shape[0]
+        num_verts = verts.shape[0]# (642, 3) [[0,1,2], ....]
 
         if self.symmetric:
             verts, faces, num_indept, num_sym, num_indept_faces, num_sym_faces = mesh.make_symmetric(verts, faces)

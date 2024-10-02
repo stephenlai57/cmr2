@@ -11,6 +11,7 @@ import torch
 import neural_renderer
 
 from nnutils import geom_utils
+from scipy.spatial.transform import Rotation as R
 
 #############
 ### Utils ###
@@ -53,19 +54,50 @@ class NeuralRenderer(torch.nn.Module):
         proj = self.proj_fn(verts, cams)
         return proj[:, :, :2]
 
+    def create_intrinsic_matrix(self, scale):
+        K = torch.tensor([[scale, 0, 0],
+                          [0, scale, 0],
+                          [0, 0, 1]], dtype=torch.float32, device=scale.device)  # Ensure same device
+        return K[None, :, :]  # Add a batch dimension
+
     def forward(self, vertices, faces, cams, textures=None):
-        verts = self.proj_fn(vertices, cams, offset_z=self.offset_z)
+        # R = cams[:, 3:7]  # Extract rotation
+        # t = cams[:, 1:3]  # Extract translation
+        # scale = cams[:, 0]  # Extract scale or other factor (if applicable)
+
+        if cams.shape[1] == 7:
+            quat = cams[:, -4:]  # Quaternion
+            scale = cams[:, 0].contiguous().view(-1, 1, 1)  # Scale
+            trans = cams[:, 1:3].contiguous().view(cams.size(0), 1, -1)  # Translation
+
+            # Convert quaternion to rotation matrix
+            R_matrix = R.from_quat(quat.detach().cpu().numpy()).as_matrix()
+            R_matrix = torch.tensor(R_matrix, dtype=torch.float32, device=cams.device)  # Convert back to torch tensor
+            t = trans  # Use the translation 
+            t = torch.cat([t, torch.zeros(t.shape[0], 1, 1, device=cams.device)], dim=2)  # Add a zero for z
+
+            t = t.float()  # Ensure translation tensor is Float
+            vertices = vertices.float()
+            K = self.create_intrinsic_matrix(scale)
+
+            print("Rotation Matrix (R):", R_matrix)  # Debugging output
+            print("Translation (t):", t)  # Debugging output
+        else:
+            raise ValueError("Invalid cam shape: expected shape (B, 7)")
+
+
+        verts = self.proj_fn(vertices, cams)
         vs = verts.clone()
         vs[:, :, 1] *= -1
         fs = faces.clone()
         if textures is None:
             self.mask_only = True
-            masks = self.renderer.render_silhouettes(vs,fs)
+            masks = self.renderer.render_silhouettes(vs,fs, R=R_matrix, t=t, K=K)
             return masks
         else:
             self.mask_only = False
             ts = textures.clone()
-            imgs = self.renderer.render(vs, fs, ts)[0] #only keep rgb, no alpha and depth
+            imgs = self.renderer.render(vs, fs, ts,  R=R_matrix, t=t, K=K)[0] #only keep rgb, no alpha and depth
             return imgs
         
 
@@ -117,6 +149,7 @@ def teapot_deform_test():
     faces_var = torch.autograd.Variable(torch.from_numpy(faces[None, :, :]).cuda(device=0))
     cams = np.array([1., 0, 0, 1, 0, 0, 0], dtype=np.float32)
     cams_var = torch.autograd.Variable(torch.from_numpy(cams[None, :]).cuda(device=0))
+    print(cams_var)
 
     class TeapotModel(torch.nn.Module):
         def __init__(self):
