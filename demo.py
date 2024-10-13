@@ -95,7 +95,6 @@ def visualize(img, outputs, renderer):
     plt.imshow(vp3)
     plt.axis('off')
     plt.draw()
-    plt.show()
     print('saving file to demo.png')
     plt.savefig('demo.png')
 
@@ -115,7 +114,7 @@ def plot_single_image(image_array):
     plt.imshow(image_array.astype(np.uint8))  # Convert pixel values to uint8
     plt.axis('off')  # Turn off axis
     plt.title('Image Visualization')
-    plt.show()
+    plt.draw()
     plt.savefig('demo2.png')
 
 def main(_):
