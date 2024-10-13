@@ -64,6 +64,8 @@ def visualize(img, outputs, renderer):
         vert, cam, angle=60, axis=[0, 1, 0], texture=texture, extra_elev=True)
     vp3 = renderer.diff_vp(
         vert, cam, angle=60, axis=[1, 0, 0], texture=texture)
+    
+    plot_single_image(vp1)
 
     img = np.transpose(img, (1, 2, 0))
     import matplotlib.pyplot as plt
@@ -97,6 +99,24 @@ def visualize(img, outputs, renderer):
     print('saving file to demo.png')
     plt.savefig('demo.png')
 
+def plot_single_image(image_array):
+    import matplotlib.pyplot as plt
+    """
+    Plots a single image from a 3D NumPy array.
+
+    Args:
+        image_array (numpy.ndarray): A 3D array with shape (height, width, 3).
+    """
+    # Check if the input is a valid 3D array
+    if image_array.ndim != 3 or image_array.shape[-1] != 3:
+        raise ValueError("Input must be a 3D array with shape (H, W, 3)")
+
+    # Display the image
+    plt.imshow(image_array.astype(np.uint8))  # Convert pixel values to uint8
+    plt.axis('off')  # Turn off axis
+    plt.title('Image Visualization')
+    plt.show()
+    plt.savefig('demo2.png')
 
 def main(_):
 
