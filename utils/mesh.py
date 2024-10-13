@@ -209,8 +209,8 @@ def compute_uvsampler(verts, faces, tex_size=2):
     F x T x T points.
     Returns F x T x T x 2
     """
-    alpha = np.arange(tex_size, dtype=np.float) / (tex_size-1)
-    beta = np.arange(tex_size, dtype=np.float) / (tex_size-1)
+    alpha = np.arange(tex_size, dtype=np.float32) / (tex_size-1)
+    beta = np.arange(tex_size, dtype=np.float32) / (tex_size-1)
     import itertools
     # Barycentric coordinate values
     coords = np.stack([p for p in itertools.product(*[alpha, beta])])
